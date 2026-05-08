@@ -1,5 +1,7 @@
 package edu.sdccd.cisc191.model;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class MatchViewModel {
     private String matchId;
     private final Player player = new Player("Player");
@@ -9,7 +11,7 @@ public class MatchViewModel {
 
     // TODO 7: Make this shared counter thread-safe.
     // Use either an AtomicInteger field or synchronized methods so background tasks cannot lose updates.
-    private int completedMatchCount = 0;
+    private AtomicInteger completedMatchCount = new AtomicInteger(0);
 
     public String getMatchId() {
         return matchId;
@@ -44,7 +46,7 @@ public class MatchViewModel {
     }
 
     public int getCompletedMatchCount() {
-        return completedMatchCount;
+        return completedMatchCount.get();
     }
 
     /**
@@ -61,7 +63,7 @@ public class MatchViewModel {
      * - Protect shared state from race conditions.
      */
     public void recordCompletedMatchThreadSafely(String winnerName) {
-        completedMatchCount = completedMatchCount + 1;
+        completedMatchCount.addAndGet(1);
         setWinnerName(winnerName);
         matchOver = true;
     }
@@ -88,8 +90,24 @@ public class MatchViewModel {
      * - Use "ranked" when ranked is true, otherwise "casual".
      */
     public String buildMatchSummary(String difficulty, boolean ranked) {
-        return "TODO: build match summary";
-    }
+        if(matchId == null || matchId.isBlank()) {
+            return "No match";
+        }
+
+        String isRanked = "casual";
+        if (ranked){
+            isRanked = "ranked";
+        }
+
+        if (difficulty == null || difficulty.isBlank()){
+            difficulty = "Normal";
+        }
+
+        return String.format("Match %s: %s vs %s (%s, %s)",
+                matchId, player.getName(), opponent.getName(), difficulty, isRanked);
+
+        }
+
 
     public void resetLocalState() {
         matchId = null;
@@ -97,6 +115,6 @@ public class MatchViewModel {
         opponent.setName("Opponent");
         matchOver = false;
         winnerName = "";
-        completedMatchCount = 0;
+        completedMatchCount = new AtomicInteger(0);
     }
 }

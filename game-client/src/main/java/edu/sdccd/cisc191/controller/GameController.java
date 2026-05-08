@@ -64,9 +64,7 @@ public class GameController {
         boolean ranked = rankedMatchCheckBox.isSelected();
 
         statusLabel.setText("Status: Joining match...");
-        matchLog.appendText("Joining " + (ranked ? "ranked" : "casual")
-                + " match as " + playerName
-                + " on " + difficulty + " difficulty...\n");
+        matchLog.appendText(buildJoinLogMessage(playerName, difficulty, ranked) + "\n");
 
         Task<JoinMatchResponse> task = grpcClient.joinMatchTask(
                 playerName,
@@ -149,6 +147,7 @@ public class GameController {
             matchLog.appendText("Match history:\n");
             for (String line : response.getMatchesList()) {
                 matchLog.appendText("- " + line + "\n");
+
             }
         });
 
@@ -210,7 +209,21 @@ public class GameController {
      * - Trim playerName and difficulty.
      */
     public static String buildJoinLogMessage(String playerName, String difficulty, boolean ranked) {
-        return "TODO: build join log message";
+
+        String isRanked = "casual";
+
+        if(ranked) isRanked = "ranked";
+
+        if(playerName == null || playerName.isBlank()){
+            playerName = "Player";
+        }
+
+        if(difficulty == null || difficulty.isBlank()){
+            difficulty = "Normal";
+        }
+
+        return String.format("Joining %s match as %s on %s difficulty...",
+                isRanked, playerName.trim(), difficulty.trim());
     }
 
     /**
@@ -224,7 +237,11 @@ public class GameController {
      */
     public static void runOnFxThread(Runnable action) {
         if (action != null) {
-            action.run();
+            if (Platform.isFxApplicationThread()) {
+                action.run();
+            } else{
+                Platform.runLater(action);
+            }
         }
     }
 
