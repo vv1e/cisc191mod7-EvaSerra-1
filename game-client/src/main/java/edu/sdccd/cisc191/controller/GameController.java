@@ -209,11 +209,6 @@ public class GameController {
      * - Trim playerName and difficulty.
      */
     public static String buildJoinLogMessage(String playerName, String difficulty, boolean ranked) {
-
-        String isRanked = "casual";
-
-        if(ranked) isRanked = "ranked";
-
         if(playerName == null || playerName.isBlank()){
             playerName = "Player";
         }
@@ -223,7 +218,8 @@ public class GameController {
         }
 
         return String.format("Joining %s match as %s on %s difficulty...",
-                isRanked, playerName.trim(), difficulty.trim());
+                ranked? "ranked": "casual",
+                playerName.trim(), difficulty.trim());
     }
 
     /**

@@ -100,11 +100,9 @@ public class GameServiceImpl extends GameServiceGrpc.GameServiceImplBase {
             difficulty = "Normal";
         }
 
-        String isRanked = "casual";
-        if(ranked) isRanked = "ranked";
-
         return String.format("Match %s: %s vs %s (%s, %s)",
-                matchId, playerName.trim(), opponentName.trim(), difficulty, isRanked);
+                matchId, playerName.trim(), opponentName.trim(), difficulty,
+                ranked? "ranked": "casual");
     }
 
     @Override

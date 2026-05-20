@@ -90,22 +90,17 @@ public class MatchViewModel {
      * - Use "ranked" when ranked is true, otherwise "casual".
      */
     public String buildMatchSummary(String difficulty, boolean ranked) {
-        if(matchId == null || matchId.isBlank()) {
+        if (matchId == null || matchId.isBlank()) {
             return "No match";
         }
 
-        String isRanked = "casual";
-        if (ranked){
-            isRanked = "ranked";
-        }
-
-        if (difficulty == null || difficulty.isBlank()){
+        if (difficulty == null || difficulty.isBlank()) {
             difficulty = "Normal";
         }
 
         return String.format("Match %s: %s vs %s (%s, %s)",
-                matchId, player.getName(), opponent.getName(), difficulty, isRanked);
-
+                matchId, player.getName(), opponent.getName(), difficulty,
+                ranked? "ranked": "casual");
         }
 
 
